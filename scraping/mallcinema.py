@@ -6,58 +6,75 @@ Mall Cinema
 Lookup for cinemas from local malls. Gets schedules , ratings, details etc.
 I plan to run this on termux. So double quotes are not needed when using commandline parameters 
 
+Pagination is not supported (yet).
 """
+import re
 import urllib.parse
 import argparse
 import requests
 from bs4 import BeautifulSoup
 
 def main():
-	parser = argparse.ArgumentParser(description='Search details ')
-	parser.add_argument('mall_name', metavar='Mall Name', nargs="*", type=str,
-                    help='an integer for the accumulator')
-	
-	args = parser.parse_args()
-	if args.mall_name:
-		mall_name = " ".join(args.mall_name)
-	else:
-		mall_name = input("Enter Mall Name: ")
+    """ Main """
+    parser = argparse.ArgumentParser(description='Search details ')
+    parser.add_argument('mall_name', metavar='Mall Name', nargs="*", type=str,
+                        help='an integer for the accumulator')
 
-	url = "https://m.clickthecity.com/search/?q={}".format(urllib.parse.quote(mall_name))
-	headers = {"user-agent" : "Mozilla/5.0 (Linux; U; Android 2.2) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"}
-	
-	s = requests.Session()
-	s.get(url,headers=headers)
-	
-	# test for now 
-	r = requests.get(url, headers=headers)
-	soup = BeautifulSoup(r.text, "html.parser") 
-	search_results = soup.select("div.searchItem")
-	if search_results: 
-		print("results found: ")
-		# TODO add optional parameter for instant redirect on first item
+    args = parser.parse_args()
+    if args.mall_name:
+        mall_name = " ".join(args.mall_name)
+    else:
+        mall_name = input("Enter Mall Name: ")
 
-		for index, search_item in enumerate(search_results, start=1):
+    url = "https://m.clickthecity.com/search/?q={}".format(urllib.parse.quote(mall_name))
+    headers = {"user-agent" : "Mozilla/5.0 (Linux; U; Android 2.2) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"}
+    
+    session = requests.Session()
+    r = session.get(url, headers=headers)
 
-			print(index, search_item.find("a").get_text())
+    soup = BeautifulSoup(r.text, "html.parser") 
+    search_results = soup.select("div.searchItem")
+    if search_results:
+        
+        # TODO add optional parameter for instant redirect on first item
+    
+        matches = list(filter(lambda item: item.find("div", attrs={"class": "mall-links"}), search_results))
+        match_count = len(matches)
+        if match_count == 1:
+            a = matches[0].find("a", attrs={"title": re.compile("^Cinemas")})
+            url = a['href']
+            scrape_cinema_page(session, url)
+            
+        elif match_count > 1:
 
-			# TODO if has .mall-links then print 
+            for index, search_item in enumerate(matches, start=1):
 
-		target = input("Select item: ")
+                print(index, search_item.find("a").get_text())
+            
+        else:
+            print("No Mall Results found")
 
-	else:
-		print("No Results found")
-
-
-	# TODO: 
-	# get link of first item ask to proceed if found (maybe(?))
-	# go to link ex: https://m.clickthecity.com/movies/theaters/sm-city-bicutan
-	# scrape contents 
+            # TODO if has .mall-links then print 
 
 
+    else:
+        print("No Results found")
 
+
+    # TODO: 
+    # get link of first item ask to proceed if found (maybe(?))
+    # go to link ex: https://m.clickthecity.com/movies/theaters/sm-city-bicutan
+    # scrape contents 
+
+
+def scrape_cinema_page(session: requests.Session, url: str):
+    r = session.get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    cinemas = soup.select("div#cinemas div[iteprop='itemListElement']")
+    print(cinemas)
+    pass
 
 # import requests
 
 if __name__ == "__main__":
-	main()
+    main()
