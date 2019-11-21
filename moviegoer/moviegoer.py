@@ -16,13 +16,21 @@ from bs4 import BeautifulSoup
 
 class MovieGoer:
     def __init__(self):
-        self.base_url = "https://m.clickthecity.com";
+        self.base_url = "https://m.clickthecity.com"
         self.headers = {"user-agent" : "Mozilla/5.0 (Linux; U; Android 2.2) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"}  
         # yeah let's pretend we're a mobile phone. 
         self.mall_name = None
+        self.session = requests.Session()
+    
 
     def search_mall(self, mall_name):
         self.mall_name = mall_name
+
+        url = f"{self.base_url}/search/?q={urllib.parse.quote(mall_name)}"
+        response = self.session.get(url, headers=self.headers)
+        soup = BeautifulSoup(response.text, "html.parser") 
+        search_results = soup.select("div.searchItem")
+        return search_results
 
 def main():
     """ Main """
