@@ -1,7 +1,7 @@
 #!/usr/bin/python
 """
 
-Mall Cinema
+MovieGoer.py
 
 Lookup for cinemas from local malls. Gets schedules , ratings, details etc.
 I plan to run this on termux. So double quotes are not needed when using commandline parameters 
@@ -13,6 +13,10 @@ import urllib.parse
 import argparse
 import requests
 from bs4 import BeautifulSoup
+
+class MovieGoer:
+    
+    pass
 
 def main():
     """ Main """
