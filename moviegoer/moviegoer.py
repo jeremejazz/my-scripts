@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 
 MovieGoer.py
@@ -15,8 +15,14 @@ import requests
 from bs4 import BeautifulSoup
 
 class MovieGoer:
-    
-    pass
+    def __init__(self):
+        self.base_url = "https://m.clickthecity.com";
+        self.headers = {"user-agent" : "Mozilla/5.0 (Linux; U; Android 2.2) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"}  
+        # yeah let's pretend we're a mobile phone. 
+        self.mall_name = None
+
+    def search_mall(self, mall_name):
+        self.mall_name = mall_name
 
 def main():
     """ Main """
