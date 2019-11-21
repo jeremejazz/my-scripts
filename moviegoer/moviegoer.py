@@ -11,6 +11,7 @@ Pagination is not supported (yet).
 TODO: 
 - caching 
 - movie info, ratings
+- tabulate results
 
 """
 import re
