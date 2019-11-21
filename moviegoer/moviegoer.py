@@ -7,6 +7,11 @@ Lookup for cinemas from local malls. Gets schedules , ratings, details etc.
 I plan to run this on termux. So double quotes are not needed when using commandline parameters 
 
 Pagination is not supported (yet).
+
+TODO: 
+- caching 
+- movie info, ratings
+
 """
 import re
 import urllib.parse
@@ -32,6 +37,25 @@ class MovieGoer:
         search_results = soup.select("div.searchItem")
         return search_results
 
+    def scrape_cinema_page(self, url: str):
+
+        
+        r = self.session.get(url,headers=self.headers)
+        
+        # get featured movie 
+
+        soup = BeautifulSoup(r.text, 'html.parser') # TODO use lxml
+        cinemas = soup.select("div#cinemas div[itemprop='itemListElement']")
+        print(len(cinemas), "Movies found: ")
+        for cinema in cinemas: 
+            print(cinema.select("a > span[itemprop='name']")[0].get_text() ) 
+            # wip
+            # TODO get time, rating, etc.
+        
+
+    def run(self): # we'll put every execution eventually on a function
+        pass
+
 def main():
     """ Main """
     parser = argparse.ArgumentParser(description='Search details ')
@@ -44,24 +68,21 @@ def main():
     else:
         mall_name = input("Enter Mall Name: ")
 
-    url = "https://m.clickthecity.com/search/?q={}".format(urllib.parse.quote(mall_name))
-    headers = {"user-agent" : "Mozilla/5.0 (Linux; U; Android 2.2) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"}
-    
-    session = requests.Session()
-    r = session.get(url, headers=headers)
+    moviegoer = MovieGoer()
+    search_results = moviegoer.search_mall(mall_name)
 
-    soup = BeautifulSoup(r.text, "html.parser") 
-    search_results = soup.select("div.searchItem")
+
     if search_results:
-        
+        # TODO put in class method
         # TODO add optional parameter for instant redirect on first item
     
         matches = list(filter(lambda item: item.find("div", attrs={"class": "mall-links"}), search_results))
         match_count = len(matches)
+        
         if match_count == 1:
             a = matches[0].find("a", attrs={"title": re.compile("^Cinemas")})
             url = a['href']
-            scrape_cinema_page(session, url)
+            moviegoer.scrape_cinema_page(url)
             
         elif match_count > 1:
 
@@ -85,12 +106,7 @@ def main():
     # scrape contents 
 
 
-def scrape_cinema_page(session: requests.Session, url: str):
-    r = session.get(url)
-    soup = BeautifulSoup(r.text, 'html.parser')
-    cinemas = soup.select("div#cinemas div[iteprop='itemListElement']")
-    print(cinemas)
-    pass
+
 
 # import requests
 
