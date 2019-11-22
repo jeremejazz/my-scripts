@@ -47,9 +47,14 @@ class MovieGoer:
 
         soup = BeautifulSoup(r.text, 'html.parser') # TODO use lxml
         cinemas = soup.select("div#cinemas div[itemprop='itemListElement']")
-        print(len(cinemas), "Movies found: ")
+        
         for cinema in cinemas: 
-            print(cinema.select("a > span[itemprop='name']")[0].get_text() ) 
+ 
+            title = cinema.select("a > span[itemprop='name']")
+            if title:
+                print(title[0].get_text())
+
+            # print(cinema.select("a > span[itemprop='name']")[0].get_text() ) 
             # wip
             # TODO get time, rating, etc.
         
