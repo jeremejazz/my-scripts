@@ -18,6 +18,7 @@ import re
 import urllib.parse
 import argparse
 import requests
+from tabulate import tabulate
 from bs4 import BeautifulSoup
 
 class MovieGoer:
@@ -51,13 +52,14 @@ class MovieGoer:
         for cinema in cinemas: 
  
             title = cinema.select("a > span[itemprop='name']")
-            if title:
+            if title: # also determine if has content. Vacant cinemas will return None
                 print(title[0].get_text())
+
 
             # print(cinema.select("a > span[itemprop='name']")[0].get_text() ) 
             # wip
             # TODO get time, rating, etc.
-        
+    
 
     def run(self): # we'll put every execution eventually on a function
         pass
@@ -86,20 +88,39 @@ def main():
         match_count = len(matches)
         
         if match_count == 1:
+            # automatically redirect if only 1 match found
             a = matches[0].find("a", attrs={"title": re.compile("^Cinemas")})
             url = a['href']
-            moviegoer.scrape_cinema_page(url)
             
         elif match_count > 1:
-
+            menu = []
             for index, search_item in enumerate(matches, start=1):
+                mall_result_name = search_item.find("a").get_text();
+                menu.append([index, mall_result_name])
 
-                print(index, search_item.find("a").get_text())
+                # print(index, search_item.find("a").get_text())
+            print(tabulate(menu, headers=["Number", "Mall Name"]))
+                
+            # Prompt for user to enter mall/theater name
+            choice = 0
+            is_invalid = True
+            while is_invalid:
+                choice = int(input("Enter result number: "))
+                if choice > 0 and choice <= match_count :
+                    a = matches[choice-1].find("a", attrs={"title": re.compile("^Cinemas")})
+                    url = a['href']
+                    is_invalid = False
+                else:
+                    print("You have entered an invalid number. Please re-enter")
+                    print(tabulate(menu, headers=["Number", "Mall Name"]))
+
             
         else:
-            print("No Mall Results found")
-
+            print("No matches")
+            
             # TODO if has .mall-links then print 
+
+        moviegoer.scrape_cinema_page(url)
 
 
     else:
