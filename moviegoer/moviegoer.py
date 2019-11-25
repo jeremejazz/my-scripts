@@ -126,21 +126,9 @@ def main():
                 else:
                     print("You have entered an invalid number. Please re-enter")
                     print(tabulate(menu, headers=["Number", "Mall Name"]))
-<<<<<<< HEAD
         else:
             print("No matches")
         moviegoer.scrape_cinema_page(url)
-=======
-
-            
-        else:
-            print("No matches")
-            
-            # TODO if has .mall-links then print 
-
-        moviegoer.scrape_cinema_page(url)
-
->>>>>>> a40ccf0fc07c85846a168e653e00d77a749ccb35
 
     else:
         print("No Results found")
