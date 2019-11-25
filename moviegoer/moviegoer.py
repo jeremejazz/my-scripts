@@ -9,10 +9,11 @@ I plan to run this on termux. So double quotes are not needed when using command
 Pagination is not supported (yet).
 
 TODO: 
+
 - caching 
 - movie info, ratings
-- tabulate results
-
+- tabulate results (ok)
+- Add date option (+1...3day)
 """
 import re
 import urllib.parse
@@ -48,17 +49,28 @@ class MovieGoer:
 
         soup = BeautifulSoup(r.text, 'html.parser') # TODO use lxml
         cinemas = soup.select("div#cinemas div[itemprop='itemListElement']")
-        
+        output_table = []  
         for cinema in cinemas: 
- 
-            title = cinema.select("a > span[itemprop='name']")
-            if title: # also determine if has content. Vacant cinemas will return None
-                print(title[0].get_text())
+              
+            movie_title = cinema.select("a > span[itemprop='name']")
+            cinema_name = cinema.select("div.panel-heading")[0].get_text() # TODO might ask for optional parameter to include cinema name to save screen space for mobile. also I don't need cinema name for my case but will still add option just in case
+            if movie_title: # also determine if has content. Vacant cinemas will return None
+                # cinema name, 
+                # schedule
+                showtimes_list = cinema.find("div", attrs={"class": "showtimes"}).find_all("span")
+                showtimes = " ".join(x.get_text() for x in showtimes_list)
+
+                output_table.append([movie_title[0].get_text(), showtimes])
+                
 
 
             # print(cinema.select("a > span[itemprop='name']")[0].get_text() ) 
             # wip
             # TODO get time, rating, etc.
+        else:
+            print("")
+            print(tabulate(output_table, headers=["Movie Title", "Showtimes"] ))
+            print("")
     
 
     def run(self): # we'll put every execution eventually on a function
@@ -113,15 +125,9 @@ def main():
                 else:
                     print("You have entered an invalid number. Please re-enter")
                     print(tabulate(menu, headers=["Number", "Mall Name"]))
-
-            
         else:
             print("No matches")
-            
-            # TODO if has .mall-links then print 
-
         moviegoer.scrape_cinema_page(url)
-
 
     else:
         print("No Results found")
