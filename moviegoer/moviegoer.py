@@ -24,8 +24,8 @@ from bs4 import BeautifulSoup
 
 class MovieGoer:
     def __init__(self):
-        self.base_url = "https://m.clickthecity.com"
-        self.headers = {"user-agent" : "Mozilla/5.0 (Linux; U; Android 2.2) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"}  
+        self.base_url = "https://clickthecity.com"
+        # self.headers = {"user-agent" : "Mozilla/5.0 (Linux; U; Android 2.2) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"}  
         # yeah let's pretend we're a mobile phone. 
         self.mall_name = None
         self.session = requests.Session()
@@ -35,7 +35,7 @@ class MovieGoer:
         self.mall_name = mall_name
 
         url = f"{self.base_url}/search/?q={urllib.parse.quote(mall_name)}"
-        response = self.session.get(url, headers=self.headers)
+        response = self.session.get(url)
         soup = BeautifulSoup(response.text, "html.parser") 
         search_results = soup.select("div.searchItem")
         return search_results
@@ -43,17 +43,18 @@ class MovieGoer:
     def scrape_cinema_page(self, url: str):
 
         
-        r = self.session.get(url,headers=self.headers)
+        r = self.session.get(url)
         
         # get featured movie 
 
         soup = BeautifulSoup(r.text, 'html.parser') # TODO use lxml
-        cinemas = soup.select("div#cinemas div[itemprop='itemListElement']")
+        cinemas = soup.select("ul#cinemas li.cinema")
         output_table = []  
         for cinema in cinemas: 
-              
-            movie_title = cinema.select("a > span[itemprop='name']")
-            cinema_name = cinema.select("div.panel-heading")[0].get_text() # TODO might ask for optional parameter to include cinema name to save screen space for mobile. also I don't need cinema name for my case but will still add option just in case
+
+            movie_title = cinema.select("a[itemprop='url'] > span[itemprop='name']")
+
+            # cinema_name = cinema.select("div.panel-heading")[0].get_text() # TODO might ask for optional parameter to include cinema name to save screen space for mobile. also I don't need cinema name for my case but will still add option just in case
             if movie_title: # also determine if has content. Vacant cinemas will return None
                 # cinema name, 
                 # schedule
@@ -136,7 +137,7 @@ def main():
 
     # TODO: 
     # get link of first item ask to proceed if found (maybe(?))
-    # go to link ex: https://m.clickthecity.com/movies/theaters/sm-city-bicutan
+    # go to link ex: https://clickthecity.com/movies/theaters/sm-city-bicutan
     # scrape contents 
 
 
