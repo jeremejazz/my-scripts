@@ -128,7 +128,8 @@ def main():
                     print("You have entered an invalid number. Please re-enter")
                     print(tabulate(menu, headers=["Number", "Mall Name"]))
         else:
-            print("No matches")
+            print(f"No matches for '{mall_name}'")
+            return
         moviegoer.scrape_cinema_page(url)
 
     else:
