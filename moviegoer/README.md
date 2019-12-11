@@ -1,7 +1,7 @@
 # MovieGoer 
 ## movie lookup automation script
 
-[Demo via Repl.it](https://repl.it/@jeremejazz/moviegoerpy)
+[Demo via Repl.it](https://moviegoer.jereme.repl.run/)
 
 Simple automation script for moviegoers (like me).
 Will look up for movies of PH malls based on search input. I made this because the current website and app for movie lookup is riddled with ads (I'm looking at you ClickTheCity!)
