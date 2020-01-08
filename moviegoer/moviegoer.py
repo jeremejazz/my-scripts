@@ -60,18 +60,25 @@ class MovieGoer:
                 # schedule
                 showtimes_list = cinema.find("div", attrs={"class": "showtimes"}).find_all("span")
                 showtimes = " ".join(x.get_text() for x in showtimes_list)
+                #ticket price
+                ticket_link = cinema.find("a", attrs={"title": "Buy Ticket"})
+                ticket_price = ""
+                result_row = [movie_title[0].get_text(), showtimes]
+                if ticket_link is not None:
+                    ticket_price = ticket_link.get_text()
+                    result_row.append(ticket_price)
 
-                output_table.append([movie_title[0].get_text(), showtimes])
+                output_table.append(result_row)
                 
-
-
-
-            # print(cinema.select("a > span[itemprop='name']")[0].get_text() ) 
-            # wip
-            # TODO get time, rating, etc.
         else:
             print("")
-            print(tabulate(output_table, headers=["Movie Title", "Showtimes"] ))
+            if output_table:
+                headers = ["Movie Title", "Showtimes", ]
+                if len(output_table[0]) == 3:
+                    headers.append("Price")
+                print(tabulate(output_table, headers=headers))
+            else:
+                print("No results")
             print("")
     
 
@@ -106,7 +113,7 @@ def main():
             a = matches[0].find("a", attrs={"title": re.compile("^Cinemas")})
             url = a['href']
             
-        elif match_count > 1:
+        elif match_count > 1: 
             menu = []
             for index, search_item in enumerate(matches, start=1):
                 mall_result_name = search_item.find("a").get_text();
@@ -140,8 +147,6 @@ def main():
     # get link of first item ask to proceed if found (maybe(?))
     # go to link ex: https://clickthecity.com/movies/theaters/sm-city-bicutan
     # scrape contents 
-
-
 
 
 # import requests
