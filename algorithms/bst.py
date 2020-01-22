@@ -27,8 +27,6 @@ class BinarySearchTree():
                         return self
                     else:
                         current = current.right
- 
-
 
 class Node():
     def __init__(self, value):
