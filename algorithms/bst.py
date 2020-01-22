@@ -4,6 +4,25 @@
 class BinarySearchTree():
     def __init__(self):
         self.root = None
+    def find(self, value): # self attempt to provide find
+        current = self.root 
+        while True:
+            print("current",current)
+
+            if current.left is None and current.right is None:
+                print("no value found")
+                return False            
+            elif value == current.value:
+                print("yay")
+                return True
+            elif value < current.value: 
+                current = current.left
+            elif value > current.value:
+                current = current.right
+
+    def findv2(self): # find provided by tutorial solution
+        pass
+
 
     def insert(self, value):
         new_node = Node(value)
@@ -27,6 +46,8 @@ class BinarySearchTree():
                         return self
                     else:
                         current = current.right
+                else:
+                    return None
 
 class Node():
     def __init__(self, value):
@@ -47,6 +68,8 @@ if __name__ == "__main__":
     tree.insert(13)
     tree.insert(11)
     tree.insert(16)
+    tree.insert(10)
+    tree.find(11)
     pass
     # tree.root = Node(10)
     # tree.root.right = Node(15)
