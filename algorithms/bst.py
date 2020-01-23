@@ -84,7 +84,7 @@ if __name__ == "__main__":
     tree.insert(11)
     tree.insert(16)
     tree.insert(10)
-    tree.findv2(300)
+    tree.findv2(int(input("Enter number")))
     pass
     # tree.root = Node(10)
     # tree.root.right = Node(15)
